@@ -66,7 +66,7 @@ def containers():
             subgraphs['linked'].\
                 add_node(con['Id'],
                          label='\n'.join((childname, con['Image'])),
-                         color='blue', shape='record')
+                         color='blue')
             subgraphs['linked'].add_edge(nametocid[parentname],
                                          nametocid[childname], color='blue')
 
@@ -98,35 +98,41 @@ def images():
     g = pgv.AGraph(directed=True, splines=True, concentrate=True)
     g.graph_attr['label'] = r'Local Images'
 
-    g.add_node(scratchid, label='scratch', shape='circle')
-
     images = c.images()
 
     for image in images:
-        if len(image['RepoTags']) == 1 and \
-                image['RepoTags'][0] == "<none>:<none>":
+        if image['RepoTags'] is None:
             continue
-        g.add_node(image['Id'], label='\n'.join(image['RepoTags']))
         hist = c.history(image['Id'])
 
         # https://github.com/docker/docker-py/pull/319
         if type(hist) != list:
             hist = json.loads(hist)
 
-        lasttag = (image['Id'], 0)
-        for idx, img in enumerate(hist[1:]):
+        for idx, img in enumerate(hist):
             if img['Tags'] is not None:
                 g.add_node(img['Id'], label='\n'.join(img['Tags']))
-                layers = idx-lasttag[1]
-                if layers > 0:
-                    g.add_edge(lasttag[0], img['Id'],
-                               label=str(layers))
+            else:
+                if img['Id'] == scratchid:
+                    g.add_node(img['Id'], label=img['Id'][0:12],
+                               shape='circle')
                 else:
-                    g.add_edge(lasttag[0], img['Id'])
-                lasttag = (img['Id'], idx)
-            if img['Id'] == scratchid:
-                g.add_edge(lasttag[0], scratchid,
-                           label=str(idx-lasttag[1]))
+                    g.add_node(img['Id'], label=img['Id'][0:12])
+
+            if idx != 0:
+                g.add_edge(hist[idx-1]['Id'], img['Id'])
+
+    # clean up irrelevant layers
+    changed = 1
+    while (changed > 0):
+        changed = 0
+        for node in g.nodes():
+            successors = g.successors(node)
+            predecessors = g.predecessors(node)
+            if len(successors) == 1 and len(predecessors) == 1:
+                g.delete_node(node)
+                g.add_edge(predecessors[0], successors[0]) # , predecessors[0])
+                changed += 1
 
     g.layout('fdp')
     g.draw('static/images.png')
@@ -134,4 +140,4 @@ def images():
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0', debug=True)
