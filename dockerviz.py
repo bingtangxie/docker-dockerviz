@@ -131,7 +131,7 @@ def images():
             predecessors = g.predecessors(node)
             if len(successors) == 1 and len(predecessors) == 1:
                 g.delete_node(node)
-                g.add_edge(predecessors[0], successors[0]) # , predecessors[0])
+                g.add_edge(predecessors[0], successors[0])
                 changed += 1
 
     g.layout('fdp')
