@@ -42,6 +42,7 @@ def containers():
 
     nametocid = {}
     subgraphs = {}
+    volumes = {}
 
     for con in containers:
         if len(con['Names']) == 1:
@@ -55,7 +56,6 @@ def containers():
     subgraphs['linked'] = g.add_subgraph(label='linked', rank='same')
     for con in containers:
         if len(con['Names']) > 1:
-            print con['Names']
             for name in con['Names']:
                 name = name[1:]
                 if name.count('/') == 1:
@@ -78,14 +78,21 @@ def containers():
             privlabel = ":".join((port['Type'], privip,
                                   str(port['PrivatePort'])))
             privid = cid + privlabel
-            g.add_node(privid, label=privlabel, rank=4, shape='box')
+            g.add_node(privid, label=privlabel, rank=4, shape='box',
+                       color='orange')
             g.add_edge(cid, privid)
             if 'IP' in port:
                 publabel = ":".join((port['Type'], port['IP'],
                                     str(port['PublicPort'])))
-                g.add_node(publabel, rank=5, shape='cds')
+                g.add_node(publabel, rank=5, shape='cds', color='red')
                 g.add_edge(privid, publabel)
         g.add_edge('docker', cid, style='dashed', arrowhead='none')
+        for vol, vid in cinspect['Volumes'].iteritems():
+            if vid not in volumes:
+                volumes[vid] = vol
+                g.add_node(vid, label=vol, shape='box3d', rank=3,
+                           color='darkgreen')
+            g.add_edge(cid, vid)
 
     g.layout('dot')
     g.draw('static/containers.png')
