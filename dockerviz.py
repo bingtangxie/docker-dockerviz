@@ -56,10 +56,11 @@ def containers():
     subgraphs['linked'] = g.add_subgraph(label='linked', rank='same')
     for con in containers:
         if len(con['Names']) > 1:
+            parents = []
             for name in con['Names']:
                 name = name[1:]
                 if name.count('/') == 1:
-                    parentname = name.split('/')[0]
+                    parents.append(name.split('/')[0])
                 if name.count('/') == 0:
                     childname = name
                     nametocid[name] = con['Id']
@@ -67,8 +68,10 @@ def containers():
                 add_node(con['Id'],
                          label='\n'.join((childname, con['Image'])),
                          color='blue')
-            subgraphs['linked'].add_edge(nametocid[parentname],
-                                         nametocid[childname], color='blue')
+            for parent in parents:
+                subgraphs['linked'].add_edge(nametocid[parent],
+                                             nametocid[childname],
+                                             color='blue')
 
     for con in containers:
         cid = con['Id']
