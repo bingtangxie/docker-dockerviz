@@ -21,10 +21,10 @@ def hello():
     <title>dockerviz</title>
   </head>
   <body>
-    <h2>dockerviz</h2>
+    <h1>dockerviz</h1>
     <ul>
-      <li><a href="/containers">/containers</a></li>
-      <li><a href="/images">/images</a></li>
+      <li><h2><a href="/containers">/containers</a></h2></li>
+      <li><h2><a href="/images">/images</a></h2></li>
     </ul>
   </body>
 </html>"""
