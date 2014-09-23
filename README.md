@@ -1,7 +1,7 @@
 dockerviz
 ===========
 
-![Image](../blob/master/containers.png?raw=true)
+![Image](../master/containers.png?raw=true)
 
 A quick experiment in generating graphs of containers and images using
 docker-py and pygraphviz.  It is wrapped up as a Flask app and shipped as a
