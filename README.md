@@ -1,6 +1,8 @@
 dockerviz
 ===========
 
+![Image](../blob/master/containers.png?raw=true)
+
 A quick experiment in generating graphs of containers and images using
 docker-py and pygraphviz.  It is wrapped up as a Flask app and shipped as a
 Docker image which you can run directly, for example:
@@ -9,5 +11,5 @@ Docker image which you can run directly, for example:
                  -v /var/run/docker.sock:/var/run/docker.sock \
                  psftw/dockerviz
 
-*NOTE: if you have a lot of images or running containers, this could generate
+*NOTE: if you have a lot of images or running containers, this will generate
 very large PNG files that could crash your browser.*
