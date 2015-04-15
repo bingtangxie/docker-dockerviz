@@ -11,4 +11,6 @@ workdir /usr/src/app
 
 run pip install -r requirements.txt
 
+expose 5000
+
 cmd python2 dockerviz.py
